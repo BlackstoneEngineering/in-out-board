@@ -1,0 +1,47 @@
+<h1>{{title}}</h1>
+<p>Tracking of employees by Bluetooth</p>
+<table style="width:80%">
+{{#each employee}}
+	<tr>
+		<td id='name'>{{name}}</td>
+		<td id='slider'>
+			<div class="onoffswitch">
+				<input type="checkbox" name="onoffswitch{{name}}" class="onoffswitch-checkbox" id="{{name}}onoffswitch" value='off' >
+				<label class="onoffswitch-label" for="{{name}}onoffswitch">
+					<span class="onoffswitch-inner"></span>
+					<span class="onoffswitch-switch"></span>
+				</label>
+			</div>
+		</td>
+	</tr>
+{{/each}}
+</table>
+
+
+<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/socket.io.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var socket = io();
+		socket.on('change',function(data){
+			//console.log('-------------------------------');
+			//$.each(data,function(index,value){
+			//	console.log('change received ', value.name,'=',value.status)
+			//});
+			// itterate through data, mark checked as necessary
+			$.each(data,function(index,value){
+				console.log('setting ',value['name'],' ',$('#'+value['name']+'onoffswitch').prop('value'),'->',value['status']);
+				var x = $('#'+value['name']+'onoffswitch').prop('value')
+				if(value['status']=='out' && x=='on' ){
+					// set setatus to Out
+					$('#'+value['name']+'onoffswitch').trigger("click");
+					console.log($('#'+value['name']+'onoffswitch').prop('value'));
+				}else if(value['status']=='in' && x=='off' ){
+					// set status to In
+					$('#'+value['name']+'onoffswitch').trigger("click");
+				}
+			})
+		});
+
+	});
+</script>
